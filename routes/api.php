@@ -21,4 +21,16 @@ Route::get('/test', function (Request $request) {
     var_dump("777");
 //    return $request->user();
 });
+//登录接口
+Route::post('/login', "RegisterController@login");
+Route::post('/register', "RegisterController@register");
+
+
+Route::group(['middleware' => 'check.login'], function() {
+    Route::get('/test', function (Request $request) {
+        var_dump("777");
+//    return $request->user();
+    });
+
+});
 
