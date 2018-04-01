@@ -24,6 +24,10 @@ Route::get('/test', function (Request $request) {
 //登录接口
 Route::post('/login', "RegisterController@login");
 Route::post('/register', "RegisterController@register");
+Route::get('/getUserList', "RegisterController@getUserList");
+
+
+
 
 
 Route::group(['middleware' => 'check.login'], function() {
@@ -33,4 +37,8 @@ Route::group(['middleware' => 'check.login'], function() {
     });
 
 });
+
+//需要放到中间件中
+//添加主题
+Route::post('/createQuestionnaire', "QuestionnaireController@createQuestionnaire");
 
