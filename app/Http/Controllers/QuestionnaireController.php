@@ -59,6 +59,8 @@ class QuestionnaireController extends Controller
      * */
     public function createQuestion(Request $request)
     {
+        $sess_key = $request->header('sess_key');
+        $user = User::user($sess_key);
         $this->validate($request,[
             'q_id' => 'required|integer',
             'question' => 'required|string'
@@ -68,7 +70,8 @@ class QuestionnaireController extends Controller
         $question = Question::create([
             'q_id' => trim($request->q_id),
             'question' => trim($request->question),
-            'create_at' => $create_at
+            'create_at' => $create_at,
+            'creator_id' => $user['id'],
         ]);
         if($question){
             return $this->successWithData($question,'问题创建成功！');
@@ -82,16 +85,18 @@ class QuestionnaireController extends Controller
      * */
     public function  createQuestionOption(Request $request)
     {
+        $sess_key = $request->header('sess_key');
+        $user = User::user($sess_key);
         $this->validate($request,[
             'question_id' => 'required|integer',
             'option' => 'required|string',
             'description' => 'required|string'
-
         ]);
         $option = Option::create([
             'question_id' => trim($request->question_id),
             'option' => trim($request->option),
-            'description' => trim($request->description)
+            'description' => trim($request->description),
+            'creator_id' => $user['id']
         ]);
         if($option){
             return $this->successWithData($option,'问题选项创建成功！');
@@ -120,7 +125,35 @@ class QuestionnaireController extends Controller
         return $this->successWithData($questionList,'获取问题列表成功！');
     }
 
+    /*
+     * 更新问卷问题选项
+     * vito
+     * */
+    public function updateQuestionOption(Request $request)
+    {
+        $sess_key = $request->header('sess_key');
+        $user = User::user($sess_key);
+        $creator_id = $user['id'];
 
+        $this->validate($request,[
+            'id' => 'required|integer',
+            'option' => 'required|string',
+            'description' => 'required|string'
+        ]);
+        $option = Option::where("creator_id",$creator_id)->find(trim($request->id));
+        if(!$option){
+            return $this->fail('没有获取到需要更新的object！');
+        }
+        $option->option = trim($request->option);
+        $option->description = trim($request->description);
+        $bool = $option->save();
+        if($bool){
+            return $this->success('更新成功！');
+        }else{
+            return $this->fail('更新失败！');
+        }
+
+    }
 
 
 }
