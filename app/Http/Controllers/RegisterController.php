@@ -29,8 +29,14 @@ class RegisterController extends Controller
         }
         $uuid = Uuid::uuid1()->toString();
         $key = 'user'.$uuid;
-        Cache::put($key,$user,120);
-        return $this->successWithData($user,'登陆成功！');
+        $user_arr = [
+            'id' => $user->id,
+            'name' => $user->name,
+            'sess_key' => $key
+
+        ];
+        Cache::put($key,$user_arr,120);
+        return $this->successWithData($user_arr,'登陆成功！');
     }
 
     /*

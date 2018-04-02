@@ -17,28 +17,27 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
     return $request->user();
 });
 
-Route::get('/test', function (Request $request) {
-    var_dump("777");
+//Route::get('/test', function (Request $request) {
+//    var_dump("777");
 //    return $request->user();
-});
+//});
 //登录接口
 Route::post('/login', "RegisterController@login");
 Route::post('/register', "RegisterController@register");
-Route::get('/getUserList', "RegisterController@getUserList");
+
 
 
 
 
 
 Route::group(['middleware' => 'check.login'], function() {
-    Route::get('/test', function (Request $request) {
-        var_dump("777");
-//    return $request->user();
-    });
+    Route::get('/getUserList', "RegisterController@getUserList");
+    //添加主题
+    Route::post('questionnaire/createQuestionnaire', "QuestionnaireController@createQuestionnaire");
+
+
 
 });
 
-//需要放到中间件中
-//添加主题
-Route::post('/createQuestionnaire', "QuestionnaireController@createQuestionnaire");
+
 

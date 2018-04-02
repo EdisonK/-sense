@@ -3,6 +3,7 @@
 namespace App\Http\Middleware;
 
 use Closure;
+use Cache;
 
 class CheckLogin
 {
@@ -15,9 +16,13 @@ class CheckLogin
      */
     public function handle($request, Closure $next)
     {
-        if (!session('user')) {
-            return redirect('login');
+        $sess_key = $request->header('sess_key');
+        if(!Cache::get($sess_key)){
+            return false;
         }
+        $user_arr = Cache::get($sess_key);
+        Cache::put($sess_key,$user_arr,120);
+
         return $next($request);
     }
 }
