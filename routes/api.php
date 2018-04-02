@@ -34,6 +34,8 @@ Route::group(['middleware' => 'check.login'], function() {
     Route::get('/getUserList', "RegisterController@getUserList");
     //添加主题
     Route::post('questionnaire/createQuestionnaire', "QuestionnaireController@createQuestionnaire");
+    Route::post('questionnaire/createQuestion', "QuestionnaireController@createQuestion");
+    Route::post('questionnaire/createQuestionOption', "QuestionnaireController@createQuestionOption");
 
 
 
