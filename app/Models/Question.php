@@ -11,4 +11,9 @@ class Question extends Model
     public $timestamps = false;
 
     protected $guarded = ['id'];
+
+    public function option()
+    {
+        return $this->hasMany(Option::class,'question_id','id');
+    }
 }

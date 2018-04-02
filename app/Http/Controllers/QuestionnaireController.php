@@ -37,6 +37,20 @@ class QuestionnaireController extends Controller
            return $this->fail('问卷主题创建失败！');
         }
     }
+    /*
+     * 获取客问卷列表
+     * vito
+     * */
+    public function getQuestionnaireList(Request $request)
+    {
+        $query = Questionnaire::where('id','>',0);
+        if($keywords = trim($request->keywords)){
+            $query->where('title','like',"%$keywords%");
+        }
+        $questionnaireList = $query->get();
+//        $questionnaireList->load('question','question.option');
+        return $this->successWithData($questionnaireList,'获取问卷列表成功！');
+    }
 
 
     /*
@@ -87,9 +101,24 @@ class QuestionnaireController extends Controller
 
     }
     /*
-     *
-     *
+     *获取问卷问题
+     *vito
      * */
+    public function getQuestionList(Request $request)
+    {
+        $this->validate($request,[
+            'q_id' => 'required|integer',
+            'per_page' => 'nullable|integer'
+        ]);
+        if(!($per_page = $request->per_page)){
+            $per_page = 10;
+        }
+        $q_id = $request->q_id;
+        $query = Question::where('id','>',0)->where('q_id',$q_id);
+        $questionList = $query->paginate($per_page);
+        $questionList->load('option');
+        return $this->successWithData($questionList,'获取问题列表成功！');
+    }
 
 
 

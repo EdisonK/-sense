@@ -11,4 +11,9 @@ class Questionnaire extends Model
     public $timestamps = false;
 
     protected $guarded = ['id'];
+
+    public function question()
+    {
+        return $this->hasMany(Question::class,'q_id','id');
+    }
 }

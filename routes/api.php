@@ -26,14 +26,16 @@ Route::post('/login', "RegisterController@login");
 Route::post('/register', "RegisterController@register");
 
 
-
-
+//获取问题列表的问卷列表
+Route::get('questionnaire/getQuestionnaireList', "QuestionnaireController@getQuestionnaireList");
+Route::get('questionnaire/getQuestionList', "QuestionnaireController@getQuestionList");
 
 
 Route::group(['middleware' => 'check.login'], function() {
     Route::get('/getUserList', "RegisterController@getUserList");
     //添加主题
     Route::post('questionnaire/createQuestionnaire', "QuestionnaireController@createQuestionnaire");
+
     Route::post('questionnaire/createQuestion', "QuestionnaireController@createQuestion");
     Route::post('questionnaire/createQuestionOption', "QuestionnaireController@createQuestionOption");
 
