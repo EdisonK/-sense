@@ -43,7 +43,7 @@ class QuestionnaireController extends Controller
      * */
     public function getQuestionnaireList(Request $request)
     {
-        $query = Questionnaire::where('id','>',0);
+        $query = Questionnaire::where('id','>',0)->where('delete',0);
         if($keywords = trim($request->keywords)){
             $query->where('title','like',"%$keywords%");
         }
@@ -106,15 +106,22 @@ class QuestionnaireController extends Controller
 
     }
     /*
-     *获取问卷问题
+     *获取问卷问题列表
      *vito
      * */
     public function getQuestionList(Request $request)
     {
+        $sess_key = $request->header('sess_key');
+        $user = User::user($sess_key);
+        $creator_id = $user['id'];
         $this->validate($request,[
             'q_id' => 'required|integer',
             'per_page' => 'nullable|integer'
         ]);
+        $questionnaire = Questionnaire::where('creator_id',$creator_id)->find(trim($request->q_id));
+        if($questionnaire->delete == 1){
+            return $this->fail('该问卷已经被删除，您无法访问！');
+        }
         if(!($per_page = $request->per_page)){
             $per_page = 10;
         }
@@ -152,6 +159,103 @@ class QuestionnaireController extends Controller
         }else{
             return $this->fail('更新失败！');
         }
+
+    }
+    /*
+    * 更新问卷问题
+    * vito
+    * */
+    public function updateQuestion(Request $request)
+    {
+        $sess_key = $request->header('sess_key');
+        $user = User::user($sess_key);
+        $creator_id = $user['id'];
+
+        $this->validate($request,[
+            'id' => 'required|integer',
+            'question' => 'required|string'
+        ]);
+        $question = Question::where("creator_id",$creator_id)->find(trim($request->id));
+        if(!$question){
+            return $this->fail('没有获取到需要更新的object！');
+        }
+        $question->question = trim($request->question);
+        $bool = $question->save();
+        if($bool){
+            return $this->success('更新成功！');
+        }else{
+            return $this->fail('更新失败！');
+        }
+    }
+    /*
+     * 跟新问卷
+     * vito
+     * */
+    public function updateQuestionnaire(Request $request)
+    {
+        $sess_key = $request->header('sess_key');
+        $user = User::user($sess_key);
+        $creator_id = $user['id'];
+
+        $this->validate($request,[
+            'id' => 'required|integer',
+            'title' => 'required|string'
+        ]);
+        $questionnaire = Questionnaire::where("creator_id",$creator_id)->find(trim($request->id));
+        if(!$questionnaire){
+            return $this->fail('没有获取到需要更新的object！');
+        }
+        $questionnaire->title = trim($request->title);
+        $bool = $questionnaire->save();
+        if($bool){
+            return $this->success('更新成功！');
+        }else{
+            return $this->fail('更新失败！');
+        }
+
+    }
+    /*
+     * 删除问卷(做个假删)
+     * vito
+     * */
+    public function deleteQuestionnaire(Request $request)
+    {
+        $sess_key = $request->header('sess_key');
+        $user = User::user($sess_key);
+        $creator_id = $user['id'];
+
+        $this->validate($request,[
+            'id' => 'required|integer'
+        ]);
+        $questionnaire = Questionnaire::where("creator_id",$creator_id)->find(trim($request->id));
+        if(!$questionnaire){
+            return $this->fail('没有获取到需要更新的object！');
+        }
+        $questionnaire->delete = 1;//设置为1表示删了，0表示未删
+        $bool = $questionnaire->save();
+        if($bool){
+            return $this->success('问卷删除成功！');
+        }else{
+            return $this->fail('问卷删除失败！');
+        }
+
+    }
+    /*
+     *获取我的问卷列表
+     *vito
+     * */
+    public function getMyQuestionnaireList(Request $request)
+    {
+        $sess_key = $request->header('sess_key');
+        $user = User::user($sess_key);
+        $creator_id = $user['id'];
+        $query = Questionnaire::where('creator_id',$creator_id)->where('delete',0);
+        if($keywords = trim($request->keywords)){
+            $query->where('title','like',"%$keywords%");
+        }
+        $questionnaireList = $query->get();
+//        $questionnaireList->load('question','question.option');
+        return $this->successWithData($questionnaireList,'获取我的问卷列表成功！');
 
     }
 

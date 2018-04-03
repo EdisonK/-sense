@@ -35,12 +35,24 @@ Route::group(['middleware' => 'check.login'], function() {
     Route::get('/getUserList', "RegisterController@getUserList");
     //添加主题
     Route::post('questionnaire/createQuestionnaire', "QuestionnaireController@createQuestionnaire");
-
     Route::post('questionnaire/createQuestion', "QuestionnaireController@createQuestion");
     Route::post('questionnaire/createQuestionOption', "QuestionnaireController@createQuestionOption");
 
-//更新选项
+    //更新选项
     Route::post('questionnaire/updateQuestionOption', "QuestionnaireController@updateQuestionOption");
+    //更新问题
+    Route::post('questionnaire/updateQuestion', "QuestionnaireController@updateQuestion");
+    //更新问卷
+    Route::post('questionnaire/updateQuestionnaire', "QuestionnaireController@updateQuestionnaire");
+    //删除问卷(假删)
+    Route::post('questionnaire/deleteQuestionnaire', "QuestionnaireController@deleteQuestionnaire");
+
+    //获取我的问卷列表
+    Route::get('questionnaire/getMyQuestionnaireList', "QuestionnaireController@getMyQuestionnaireList");
+    //获取问卷题目的列表
+    Route::get('questionnaire/getQuestionList', "QuestionnaireController@getQuestionList");
+
+
 
 
 
